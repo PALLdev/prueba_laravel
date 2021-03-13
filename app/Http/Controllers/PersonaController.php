@@ -12,7 +12,10 @@ class PersonaController extends Controller
     {
         $rut = $request->rut;
         $datos = Http::get('https://siichile.herokuapp.com/consulta', ['rut' => $rut])->json();
-        dd($datos);
+        // dd($datos);
+        return view('datos', [
+            'datos' => $datos
+        ]);
     }
 
     /**

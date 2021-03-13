@@ -15,7 +15,9 @@ class CreatePersonasTable extends Migration
     {
         Schema::create('personas', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->string('rut');
+            $table->string('razon_social');
+            $table->json('actividades');
         });
     }
 

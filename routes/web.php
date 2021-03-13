@@ -25,6 +25,6 @@ Route::get(
 )->name('/');
 
 Route::get(
-    '/consultaRut',
+    '/consulta',
     [PersonaController::class, 'fetchApi']
-)->name('consulta.rut');
+)->name('post');
