@@ -2,20 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Persona;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 
 class PersonaController extends Controller
 {
-
-    public function fetchApi(Request $request) 
+    protected function fetchApi(Request $request): Collection
     {
+        $url = 'https://siichile.herokuapp.com/consulta';
         $rut = $request->rut;
-        $datos = Http::get('https://siichile.herokuapp.com/consulta', ['rut' => $rut])->json();
-        // dd($datos);
-        return view('datos', [
-            'datos' => $datos
-        ]);
+        return collect(Http::get($url, ['rut' => $rut])->json())->map(fn ($datos) => $datos);
     }
 
     /**
@@ -26,7 +24,8 @@ class PersonaController extends Controller
     public function index()
     {
         //
-        return view('main');
+        $personas = Persona::all();
+        return view('main')->with('data', $personas);
     }
 
     /**
@@ -48,6 +47,16 @@ class PersonaController extends Controller
     public function store(Request $request)
     {
         //
+        $rut = $request->rut;
+        $datos = Http::get('https://siichile.herokuapp.com/consulta', ['rut' => $rut])->json();
+        // dd($datos);
+        $persona = new Persona();
+        $persona->rut = $datos['rut'];
+        $persona->razon_social = $datos['razon_social'];
+        $persona->actividades = $datos['actividades'];
+        $persona->save();
+
+        return redirect('/');
     }
 
     /**

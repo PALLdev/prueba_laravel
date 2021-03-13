@@ -24,7 +24,7 @@ Route::get(
     [PersonaController::class, 'index']
 )->name('/');
 
-Route::get(
-    '/consulta',
-    [PersonaController::class, 'fetchApi']
+Route::post(
+    '/',
+    [PersonaController::class, 'store']
 )->name('post');
