@@ -4,16 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Persona;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Session;
 
 class PersonaController extends Controller
 {
-    protected function fetchApi(Request $request): Collection
+    public function fetchApi(string $rut)
     {
         $url = 'https://siichile.herokuapp.com/consulta';
-        $rut = $request->rut;
-        return collect(Http::get($url, ['rut' => $rut])->json())->map(fn ($datos) => $datos);
+        return Http::get($url, ['rut' => $rut])->json();
     }
 
     /**
@@ -29,16 +28,6 @@ class PersonaController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -47,27 +36,26 @@ class PersonaController extends Controller
     public function store(Request $request)
     {
         //
-        $rut = $request->rut;
-        $datos = Http::get('https://siichile.herokuapp.com/consulta', ['rut' => $rut])->json();
-        // dd($datos);
-        $persona = new Persona();
-        $persona->rut = $datos['rut'];
-        $persona->razon_social = $datos['razon_social'];
-        $persona->actividades = $datos['actividades'];
-        $persona->save();
+        $rut = str_replace('.','',$request->rut);
 
-        return redirect('/');
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
+        $persona = Persona::where('rut', $rut)->first();
+        // dd($persona);
+        if (!$persona) {
+            $datos = $this->fetchApi($rut);
+            $rutSinPuntos = $datos['rut'];
+            // dd($datos);
+            $persona = new Persona();
+            $persona->rut = str_replace('.','',$rutSinPuntos);
+            $persona->razon_social = $datos['razon_social'];
+            $persona->actividades = $datos['actividades'];
+            $persona->save();
+            $msg = 'Agregado exitosamente!';
+        }else{
+            $msg = 'Este rut ya existe en la base de datos';
+        }
+        // dd($msg);
+        $personas = Persona::all();
+        return view('main')->with('msg',$msg)->with('data', $personas);
     }
 
     /**
@@ -75,10 +63,13 @@ class PersonaController extends Controller
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
-     */
+     */   
+        
     public function edit($id)
     {
         //
+        $persona = Persona::find($id);
+        return view('edit')->with('persona', $persona);
     }
 
     /**
@@ -91,6 +82,12 @@ class PersonaController extends Controller
     public function update(Request $request, $id)
     {
         //
+        dd($request->input('rut'));
+        $persona = Persona::find($id);
+        $persona->rut = $request->input('rut');
+        $persona->razon_social = $request->input('razon_social');
+        $persona->update();
+        return redirect('/');
     }
 
     /**
@@ -102,5 +99,8 @@ class PersonaController extends Controller
     public function destroy($id)
     {
         //
+        $persona = Persona::find($id);
+        $persona->delete();
+        return redirect('/');
     }
 }

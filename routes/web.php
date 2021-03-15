@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PersonaController;
 
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -28,3 +27,10 @@ Route::post(
     '/',
     [PersonaController::class, 'store']
 )->name('post');
+
+Route::get('/persona/{id}/edit', [PersonaController::class, 'edit'])->name('persona.edit');
+
+Route::put('/{id}', [PersonaController::class, 'update']
+)->name('persona.update');
+
+Route::delete('/{id}', [PersonaController::class, 'destroy'])->name('persona.destroy');
