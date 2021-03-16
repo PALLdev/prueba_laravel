@@ -34,3 +34,5 @@ Route::put('/{id}', [PersonaController::class, 'update']
 )->name('persona.update');
 
 Route::delete('/{id}', [PersonaController::class, 'destroy'])->name('persona.destroy');
+
+Route::get('/personas-list-pdf', [PersonaController::class, 'exportPdf'])->name('persona.pdf');

@@ -12,5 +12,6 @@ class Persona extends Model
     protected $casts = [
         'actividades' => AsCollection::class
     ];
+    protected $fillable = ['rut', 'razon_social', 'actividades'];
     public $timestamps = false;
 }
